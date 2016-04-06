@@ -1,8 +1,7 @@
 # TODO: Separate collection from parsing (perhaps collecting in parallel a la RHEVM)
-
 module ManageIQ::Providers
-  class Openstack::NetworkManager::RefreshParser
-    include ManageIQ::Providers::Openstack::RefreshParserCommon::HelperMethods
+  class Nuage::NetworkManager::RefreshParser
+    include ManageIQ::Providers::Nuage::RefreshParserCommon::HelperMethods
 
     def self.ems_inv_to_hashes(ems, options = nil)
       new(ems, options).ems_inv_to_hashes
@@ -104,13 +103,16 @@ module ManageIQ::Providers
       process_collection(network_ports, :network_ports) { |n| parse_network_port(n) }
     end
 
+    #to-do: Need to figure out the right way to trigger the subnet call and get rid of the hard code
+    Vsd = VsdClient.new('vsd_add:port','username','password')
+
     def get_subnets
       return unless @network_service.name == :neutron
       @data[:cloud_subnets] = []
-
       networks.each do |n|
         new_net = @data_index.fetch_path(:cloud_networks, n.id)
-        new_net[:cloud_subnets] = n.subnets.collect { |s| parse_subnet(s) }
+       # new_net[:cloud_subnets] = n.subnets.collect { |s| parse_subnet(s) }
+        new_net[:cloud_subnets] = Vsd.get_subnets
 
         # Lets store also subnets into indexed data, so we can reference them elsewhere
         new_net[:cloud_subnets].each do |x|
