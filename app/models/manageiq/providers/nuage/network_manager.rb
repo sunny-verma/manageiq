@@ -3,4 +3,5 @@ Class ManageIQ::Providers::Nuage::NetworkManager < ManageIQ::Providers::NetworkM
   require_nested :RefreshWorker
   require_nested :Refresher
 
+
 end
