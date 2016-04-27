@@ -39,6 +39,7 @@ require 'json'
       if (@apiKey == '')
         login
       end
+      puts "url #{url}"
       RestClient::Request.execute(method: :get, url: url, user: @user, password: @apiKey, headers: @headers, :verify_ssl => false, :verify_ssl => false) { |response|
         return response
       }

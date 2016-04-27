@@ -4,27 +4,36 @@ class ManageIQ::Providers::Nuage::NetworkManager < ManageIQ::Providers::NetworkM
   require_nested :Refresher
   require_nested :VsdClient
 
+  def self.ems_type
+    @ems_type ||= "nuage".freeze
+  end
+
+  def self.description
+    @description ||= "Nuage Networks".freeze
+  end
+
   def self.raw_connect(auth_url, username, password)
-
     VsdClient.new(auth_url, username, password)
-
   end
 
   def connect(options = {})
     raise "no credentials defined" if self.missing_credentials?(options[:auth_type])
 
-    protocol = options[:protocol]
+    protocol = options[:protocol] || security_protocol
     server   = options[:ip] || address
     port     = options[:port] || self.port
     username = options[:user] || authentication_userid(options[:auth_type])
     password = options[:pass] || authentication_password(options[:auth_type])
     version  = options[:version] || api_version
 
-    self.class.raw_connect(auth_url(protocol, server, port ,version), username, password)
+    url = auth_url(protocol, server, port ,version)
+    puts "url #{url}"
+    self.class.raw_connect(url, username, password)
   end
 
   def auth_url(protocol, server, port, version)
-    return protocol+'://' + server + ':' + port + '/' + 'nuage/api/' + version
+    scheme = protocol == "no_ssl" ? "http" : "https"
+    return scheme +'://' + server + ':' + port.to_s + '/' + 'nuage/api/' + version
   end
 
 end
