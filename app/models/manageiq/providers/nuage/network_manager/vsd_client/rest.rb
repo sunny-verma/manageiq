@@ -1,7 +1,7 @@
 require 'rest-client'
 require 'rubygems'
 require 'json'
-  class ManageIQ::Providers::Nuage::NetworkManager::Rest
+  class ManageIQ::Providers::Nuage::NetworkManager::VsdClient::Rest
 
     def initialize(server, user, password)
       @server=server
@@ -13,7 +13,7 @@ require 'json'
 
     def login
       @loginUrl = @server+"/me"
-      RestClient::Request.execute(method: :get, url: @loginUrl, user: @user, password: @password, headers: @headers) { |response|
+      RestClient::Request.execute(method: :get, url: @loginUrl, user: @user, password: @password, headers: @headers, :verify_ssl => false) { |response|
         case response.code
           when 200
             data = JSON.parse(response.body)
@@ -39,7 +39,7 @@ require 'json'
       if (@apiKey == '')
         login
       end
-      RestClient::Request.execute(method: :get, url: url, user: @user, password: @apiKey, headers: @headers) { |response|
+      RestClient::Request.execute(method: :get, url: url, user: @user, password: @apiKey, headers: @headers, :verify_ssl => false, :verify_ssl => false) { |response|
         return response
       }
     end
@@ -48,7 +48,7 @@ require 'json'
       if (@apiKey == '')
         login
       end
-      RestClient::Request.execute(method: :delete, url: url, user: @user, password: @apiKey, headers: @headers) { |response|
+      RestClient::Request.execute(method: :delete, url: url, user: @user, password: @apiKey, headers: @headers, :verify_ssl => false) { |response|
         return response
       }
     end
@@ -58,7 +58,7 @@ require 'json'
         login
       end
 
-      RestClient::Request.execute(method: :put, data: data, url: url, user: @user, password: @apiKey, headers: @headers) { |response|
+      RestClient::Request.execute(method: :put, data: data, url: url, user: @user, password: @apiKey, headers: @headers, :verify_ssl => false) { |response|
         return response
       }
     end
@@ -68,7 +68,7 @@ require 'json'
         login
       end
 
-      RestClient::Request.execute(method: :post, data: data, url: url, user: @user, password: @apiKey, headers: @headers) { |response|
+      RestClient::Request.execute(method: :post, data: data, url: url, user: @user, password: @apiKey, headers: @headers, :verify_ssl => false) { |response|
         return response
       }
     end
