@@ -2,20 +2,16 @@ module ManageIQ::Providers
   module Nuage
     module RefreshParserCommon
       module HelperMethods
-        def process_collection(collection, key, &block)
-          @data[key] ||= []
-          return if @options && @options[:inventory_ignore] && @options[:inventory_ignore].include?(key)
-          collection.each { |item| process_collection_item(item, key, &block) }
-        end
-
-        def process_collection_item(item, key)
+        def process_collection(collection, key)
           @data[key] ||= []
 
-          uid, new_result = yield(item)
+          collection.each do |item|
+            uid, new_result = yield(item)
+            next if uid.nil?
 
-          @data[key] << new_result
-          @data_index.store_path(key, uid, new_result)
-          new_result
+            @data[key] << new_result
+            @data_index.store_path(key, uid, new_result)
+          end
         end
       end
     end
