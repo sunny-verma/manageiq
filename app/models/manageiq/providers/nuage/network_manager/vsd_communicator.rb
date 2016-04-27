@@ -204,27 +204,27 @@ module ManageIQ::Providers
 
     class << self
       def security_group_type
-        'ManageIQ::Providers::Openstack::NetworkManager::SecurityGroup'
+        'ManageIQ::Providers::Nuage::NetworkManager::SecurityGroup'
       end
 
       def network_router_type
-        "ManageIQ::Providers::Openstack::NetworkManager::NetworkRouter"
+        "ManageIQ::Providers::Nuage::NetworkManager::NetworkRouter"
       end
 
       def cloud_network_type
-        "ManageIQ::Providers::Openstack::NetworkManager::CloudNetwork"
+        "ManageIQ::Providers::Nuage::NetworkManager::CloudNetwork"
       end
 
       def cloud_subnet_type
-        "ManageIQ::Providers::Openstack::NetworkManager::CloudSubnet"
+        "ManageIQ::Providers::Nuage::NetworkManager::CloudSubnet"
       end
 
       def floating_ip_type
-        "ManageIQ::Providers::Openstack::NetworkManager::FloatingIp"
+        "ManageIQ::Providers::Nuage::NetworkManager::FloatingIp"
       end
 
       def network_port_type
-        "ManageIQ::Providers::Openstack::NetworkManager::NetworkPort"
+        "ManageIQ::Providers::Nuage::NetworkManager::NetworkPort"
       end
     end
   end
