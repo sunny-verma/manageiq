@@ -36,26 +36,8 @@ module ManageIQ::Providers
           return
         end
         subnets = JSON.parse(response.body)
-        results = subnets.collect { |subnet|
-          {
-              :type                           => self.class.cloud_subnet_type,
-              :name                           => subnet['name'],
-              :ems_ref                        => subnet['ID'],
-              :cidr                           => subnet['address'] + to_cidr(subnet['netmask']),
-              :network_protocol               => subnet['IPType'].downcase!,
-              :gateway                        => subnet['gateway'],
-              :dhcp_enabled                   => false,
-              :cloud_tenant                   => nil,
-              :dns_nameservers                => nil,
-              :ipv6_router_advertisement_mode => nil,
-              :ipv6_address_mode              => nil,
-              :allocation_pools               => nil,
-              :host_routes                    => nil,
-              :ip_version                     => 4,
-              :subnetpool_id                  => nil,
-          }
-        }
-        return results
+        p subnets
+        return subnets
       end
       p 'Error in connection '+response.code.to_s
     end
