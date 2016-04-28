@@ -33,6 +33,10 @@ module ManageIQ::Providers
       process_collection(subnets, :cloud_subnets) {|s| parse_subnets(s)}
     end
 
+    def to_cidr (netmask)
+      '/' + netmask.to_i.to_s(2).count("1").to_s
+    end
+
     def parse_subnets(subnet)
       uid = subnet['ID']
 

@@ -3,7 +3,6 @@ module ManageIQ::Providers
     include ::EmsRefresh::Refreshers::EmsRefresherMixin
 
     def parse_legacy_inventory(ems)
-      require 'byebug'; byebug
       ManageIQ::Providers::Nuage::NetworkManager::RefreshParser.ems_inv_to_hashes(ems, refresher_options)
     end
 

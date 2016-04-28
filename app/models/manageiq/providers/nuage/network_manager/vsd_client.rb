@@ -42,10 +42,6 @@ module ManageIQ::Providers
       p 'Error in connection '+response.code.to_s
     end
 
-    def to_cidr (netmask)
-      '/' + netmask.to_i.to_s(2).count("1").to_s
-    end
-
     def get_vPorts
       response = @restCall.get(@server + '/vports')
       if (response.code == 200)
