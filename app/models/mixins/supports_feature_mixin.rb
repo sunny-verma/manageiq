@@ -96,6 +96,7 @@ module SupportsFeatureMixin
     :refresh_network_interfaces => 'Refresh Network Interfaces for a Host',
     :update                     => 'Update',
     :update_network_router      => 'Network Router Update',
+    :ems_network_new            => 'New EMS Network Provider',
   }.freeze
 
   # Whenever this mixin is included we define all features as unsupported by default.
