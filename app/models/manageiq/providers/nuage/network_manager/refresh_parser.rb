@@ -50,10 +50,10 @@ module ManageIQ::Providers
         new_net[:cloud_subnets] = @vsd_client.get_subnets.collect { |s| parse_subnets(s) }
 
         # Lets store also subnets into indexed data, so we can reference them elsewhere
-        new_net[:cloud_subnets].each do |x|
-          @data_index.store_path(:cloud_subnets, x[:ems_ref], x)
-          @data[:cloud_subnets] << x
-        end
+        #new_net[:cloud_subnets].each do |x|
+          #@data_index.store_path(:cloud_subnets, x[:ems_ref], x)
+          #@data[:cloud_subnets] << x
+        #end
       end
     end
 
@@ -70,16 +70,16 @@ module ManageIQ::Providers
       new_result = {
         :type                      => self.class.cloud_network_type + network_type_suffix,
         :name                      => "Nuage Network",
-        :ems_ref                   => 1,
+        :ems_ref                   => "1",
         :shared                    => "shared",
-        :status                    => status,
+        :status                    => "status",
         :enabled                   => "enabled",
         :external_facing           => "ef",
-        :cloud_tenant              => "ct",
-        :orchestration_stack       => "os",
+        :cloud_tenant              => parent_manager_fetch_path(:cloud_tenants, 5),
+        :orchestration_stack       => parent_manager_fetch_path(:orchestration_stacks, @resource_to_stack[uid]),
         :provider_physical_network => "ppn",
         :provider_network_type     => "pnt",
-        :provider_segmentation_id  => "psi",
+        :provider_segmentation_id  =>  342,
         :vlan_transparent          => "vt",
         :maximum_transmission_unit => "mtu",
         :port_security_enabled     => "pse",
@@ -93,10 +93,10 @@ module ManageIQ::Providers
       new_result = {
         :type                  => self.class.network_router_type,
         :name                  => "nuage Router",
-        :ems_ref               => 2,
+        :ems_ref               => "2",
         :cloud_network         => @data_index.fetch_path(:cloud_networks, network_id),
         :admin_state_up        => "asu",
-        :cloud_tenant          => "ct",
+        :cloud_tenant          => nil,
         :status                => "s",
         :external_gateway_info => "emi",
         :distributed           => "d",
@@ -120,6 +120,13 @@ module ManageIQ::Providers
         :ip_version                     => 4,
       }
       return uid, new_result
+    end
+    
+    def parent_manager_fetch_path(collection, ems_ref)
+      @parent_manager_data ||= {}
+      return @parent_manager_data.fetch_path(collection, ems_ref) if @parent_manager_data.has_key_path?(collection, ems_ref)
+
+      @parent_manager_data.store_path(collection, ems_ref, @ems.public_send(collection).try(:where, :ems_ref => ems_ref).try(:first))
     end
 
     class << self
