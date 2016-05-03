@@ -22,7 +22,7 @@ module ManageIQ::Providers
       log_header = "MIQ(#{self.class.name}.#{__method__}) Collecting data for EMS name: [#{@ems.name}] id: [#{@ems.id}]"
 
       get_networks
-      get_subnets
+      get_network_routers
 
       @data
     end
@@ -30,15 +30,31 @@ module ManageIQ::Providers
     private
 
     def get_networks
-      return unless @network_service.name == :neutron
-
+      networks = ['1'];
       process_collection(networks, :cloud_networks) { |n| parse_network(n) }
       get_subnets
     end
     
+    def get_network_routers
+      network_routers = ['1'];
+      process_collection(network_routers, :network_routers) { |n| parse_network_router(n) }
+    end
+    
     def get_subnets
-      subnets = @vsd_client.get_subnets
-      process_collection(subnets, :cloud_subnets) {|s| parse_subnets(s)}
+      #subnets = @vsd_client.get_subnets
+      #process_collection(subnets, :cloud_subnets) {|s| parse_subnets(s)}
+      networks = ['1'];
+      networks.each do |n|
+        #new_net = @data_index.fetch_path(:cloud_networks, 1)
+        new_net = Hash.new
+        new_net[:cloud_subnets] = @vsd_client.get_subnets.collect { |s| parse_subnets(s) }
+
+        # Lets store also subnets into indexed data, so we can reference them elsewhere
+        new_net[:cloud_subnets].each do |x|
+          @data_index.store_path(:cloud_subnets, x[:ems_ref], x)
+          @data[:cloud_subnets] << x
+        end
+      end
     end
 
     def to_cidr (netmask)
@@ -46,28 +62,46 @@ module ManageIQ::Providers
     end
 
     def parse_network(network)
-      uid     = network.id
-      status  = (network.status.to_s.downcase == "active") ? "active" : "inactive"
+      uid     = 1
+      status  = "active"
 
-      network_type_suffix = network.router_external ? "::Public" : "::Private"
+      network_type_suffix = "::Public" 
 
       new_result = {
         :type                      => self.class.cloud_network_type + network_type_suffix,
-        :name                      => network.name,
-        :ems_ref                   => uid,
-        :shared                    => network.shared,
+        :name                      => "Nuage Network",
+        :ems_ref                   => 1,
+        :shared                    => "shared",
         :status                    => status,
-        :enabled                   => network.admin_state_up,
-        :external_facing           => network.router_external,
-        :cloud_tenant              => parent_manager_fetch_path(:cloud_tenants, network.tenant_id),
-        :orchestration_stack       => parent_manager_fetch_path(:orchestration_stacks, @resource_to_stack[uid]),
-        :provider_physical_network => network.provider_physical_network,
-        :provider_network_type     => network.provider_network_type,
-        :provider_segmentation_id  => network.provider_segmentation_id,
-        :vlan_transparent          => network.attributes["vlan_transparent"],
-        # TODO(lsmola) expose attributes in FOG
-        :maximum_transmission_unit => network.attributes["mtu"],
-        :port_security_enabled     => network.attributes["port_security_enabled"],
+        :enabled                   => "enabled",
+        :external_facing           => "ef",
+        :cloud_tenant              => "ct",
+        :orchestration_stack       => "os",
+        :provider_physical_network => "ppn",
+        :provider_network_type     => "pnt",
+        :provider_segmentation_id  => "psi",
+        :vlan_transparent          => "vt",
+        :maximum_transmission_unit => "mtu",
+        :port_security_enabled     => "pse",
+      }
+      return uid, new_result
+    end
+    
+    def parse_network_router(network_router)
+      uid        = 2
+      network_id = 3
+      new_result = {
+        :type                  => self.class.network_router_type,
+        :name                  => "nuage Router",
+        :ems_ref               => 2,
+        :cloud_network         => @data_index.fetch_path(:cloud_networks, network_id),
+        :admin_state_up        => "asu",
+        :cloud_tenant          => "ct",
+        :status                => "s",
+        :external_gateway_info => "emi",
+        :distributed           => "d",
+        :routes                => "r",
+        :high_availability     => "ha",
       }
       return uid, new_result
     end
@@ -89,6 +123,12 @@ module ManageIQ::Providers
     end
 
     class << self
+      def cloud_network_type
+        "ManageIQ::Providers::Nuage::NetworkManager::CloudNetwork"
+      end
+      def network_router_type
+        "ManageIQ::Providers::Nuage::NetworkManager::NetworkRouter"
+      end
       def cloud_subnet_type
         "ManageIQ::Providers::Nuage::NetworkManager::CloudSubnet"
       end
