@@ -30,6 +30,7 @@ module ManageIQ::Providers
 
     def get_enterprises
       enterprises = @vsd_client.get_enterprises
+      p enterprises
       enterprises.each { |enterprise| 
         @enterprises[enterprise['ID']] = enterprise['name']
      }
