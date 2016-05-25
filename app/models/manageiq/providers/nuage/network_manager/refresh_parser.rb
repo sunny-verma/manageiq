@@ -33,7 +33,6 @@ module ManageIQ::Providers
       enterprises.each { |enterprise|
         @enterprises[enterprise['ID']] = enterprise['name']
      }
-  # TODO for now creating just default NetworkGroup, later we should fetch a correct groups of subnets
      process_collection(enterprises, :network_groups) { |n| parse_network_group(n) }
      get_domains
     end
@@ -58,7 +57,8 @@ module ManageIQ::Providers
     def get_subnets
       @data[:cloud_subnets] = []
       @data[:network_groups].each do |net|
-       net[:cloud_subnets] = @vsd_client.get_subnets.collect { |s| parse_subnet(s) }
+      #filtering out subnets based on the enterprise they are mapped to
+       net[:cloud_subnets] = @vsd_client.get_subnets.collect { |s| parse_subnet(s) }.select { |filter| filter[:extra_attributes][:enterprise_name] == net[:name] }
 
        # Lets store also subnets into indexed data, so we can reference them elsewhere
        net[:cloud_subnets].each do |x|
@@ -109,8 +109,8 @@ module ManageIQ::Providers
       domain_name          = zone[2]
       enterprise_id        = zone[3]
       enterprise_name      = zone[4]
-      return {'enterprise_name' => enterprise_name, 'enterprise_id' => enterprise_id,
-        'domain_name' => domain_name, 'domain_id' => domain_id, 'zone_name' => zone_name, 'zone_id' => zone_id}
+      return {:enterprise_name => enterprise_name, :enterprise_id => enterprise_id,
+        :domain_name => domain_name, :domain_id => domain_id, :zone_name => zone_name, :zone_id => zone_id}
     end
 
     class << self
