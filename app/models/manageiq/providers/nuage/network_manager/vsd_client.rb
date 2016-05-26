@@ -92,6 +92,18 @@ module ManageIQ::Providers
       end
       $log.error('Error in connection ' + response.code.to_s)
     end
+    
+    def get_policy_groups
+      response = @rest_call.get(@server + '/policygroups')
+      if response.code == 200
+        if response.body == ''
+          $log.warn('No policy Group present')
+          return
+        end
+        return JSON.parse(response.body)
+      end
+      $log.error('Error in connection ' + response.code.to_s)
+    end
 
     def install_license(license_str)
       license_dict = {}

@@ -22,6 +22,7 @@ module ManageIQ::Providers
 
       $log.info("#{log_header}...")
       get_enterprises
+      get_policy_groups
       $log.info(@data)
       @data
     end
@@ -71,6 +72,27 @@ module ManageIQ::Providers
     def to_cidr(netmask)
       '/' + netmask.split(".").map { |e| e.to_i.to_s(2).rjust(8, "0") }.join.count("1").to_s
     end
+    
+    def get_policy_groups
+      policy_group = @vsd_client.get_policy_groups
+      process_collection(policy_group, :security_groups) { |pg| parse_policy_group(pg) }
+      
+     # @data[:security_groups] = []
+     # @data[:network_groups].each do |net|
+      #filtering out policy groups based on the enterprise they are mapped to
+      # net[:security_groups] = @vsd_client.get_policy_groups.select { |filter| 
+      #   domain_id  = filter['parentID']
+      #   enterprise_name = @domains[domain_id][0]
+      #   enterprise_name == net[:name] 
+       #  }.collect {  |pg| parse_policy_group(pg) }
+
+       # Lets store also security_groups into indexed data, so we can reference them elsewhere
+      # net[:security_groups].each do |x|
+      #   @data_index.store_path(:security_groups, x[:ems_ref], x)
+       #  @data[:security_groups] << x
+      # end
+      #end
+    end
 
     def parse_network_group(network_group)
       uid     = network_group['ID']
@@ -112,6 +134,17 @@ module ManageIQ::Providers
       return {:enterprise_name => enterprise_name, :enterprise_id => enterprise_id,
         :domain_name => domain_name, :domain_id => domain_id, :zone_name => zone_name, :zone_id => zone_id}
     end
+    
+    def parse_policy_group(pg)
+      uid        = pg['ID']
+      new_result = {
+        :type                => self.class.security_group_type,
+        :ems_ref             => uid,
+        :name                => pg['name'],
+      }
+
+      return uid, new_result
+    end
 
     class << self
       def cloud_subnet_type
@@ -120,6 +153,10 @@ module ManageIQ::Providers
 
       def network_group_type
         "ManageIQ::Providers::Nuage::NetworkManager::NetworkGroup"
+      end
+      
+      def security_group_type
+        'ManageIQ::Providers::Nuage::NetworkManager::SecurityGroup'
       end
     end
   end
