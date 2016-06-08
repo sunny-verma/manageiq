@@ -609,6 +609,7 @@ module EmsCommon
     end
 
     @edit[:openstack_api_versions] = retrieve_openstack_api_versions
+    @edit[:nuage_api_versions]     = retrieve_nuage_api_versions
 
     @edit[:new][:default_userid] = @ems.authentication_userid
     @edit[:new][:default_password] = @ems.authentication_password
@@ -655,9 +656,11 @@ module EmsCommon
     @openstack_infra_providers = retrieve_openstack_infra_providers
     @openstack_security_protocols = retrieve_openstack_security_protocols
     @openstack_amqp_security_protocols = retrieve_openstack_amqp_security_protocols
+    @nuage_security_protocols = retrieve_nuage_security_protocols
     @scvmm_security_protocols = [[_('Basic (SSL)'), 'ssl'], ['Kerberos', 'kerberos']]
     @openstack_api_versions = retrieve_openstack_api_versions
     @emstype_display = model.supported_types_and_descriptions_hash[@ems.emstype]
+    @nuage_api_versions = retrieve_nuage_api_versions
   end
 
   def retrieve_provider_regions
@@ -679,8 +682,20 @@ module EmsCommon
     [['Keystone v2', 'v2'], ['Keystone v3', 'v3']]
   end
 
-  def retrieve_openstack_security_protocols
+  def retrieve_nuage_api_versions
+    [['Version 3.2', 'v3_2'], ['Version 4.0', 'v4_0']]
+  end
+
+  def retrieve_security_protocols
     [[_('SSL without validation'), 'ssl'], [_('SSL'), 'ssl-with-validation'], [_('Non-SSL'), 'non-ssl']]
+  end
+
+  def retrieve_openstack_security_protocols
+    retrieve_security_protocols
+  end
+
+  def retrieve_nuage_security_protocols
+    retrieve_security_protocols
   end
 
   def retrieve_openstack_amqp_security_protocols
