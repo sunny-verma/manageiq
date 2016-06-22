@@ -141,6 +141,7 @@ module ManageIQ::Providers
         :type                => self.class.security_group_type,
         :ems_ref             => uid,
         :name                => pg['name'],
+        :network_group    => NetworkGroup.where(:name => "Raleigh-NOC").first  
       }
 
       return uid, new_result
