@@ -23,7 +23,8 @@ module ManageIQ::Providers
 
       _log.info("#{log_header}...")
       get_enterprises
-      get_policy_groups
+     # get_policy_groups
+      get_events
       _log.info(@data)
       @data
     end
@@ -73,6 +74,13 @@ module ManageIQ::Providers
     def get_policy_groups
       policy_group = @vsd_client.get_policy_groups
       process_collection(policy_group, :security_groups) { |pg| parse_policy_group(pg) }
+    end
+
+    def get_events
+      @enterprises.each do |enterprise|
+         events = @vsd_client.get_events(enterprise[0])
+         _log.info(events)
+      end
     end
 
     def to_cidr(netmask)

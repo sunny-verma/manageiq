@@ -105,5 +105,18 @@ module ManageIQ::Providers
       end
       _log.error('Error in connection ' + response.code.to_s)
     end
+
+    def get_events( enterprise_id )
+      response = @rest_call.get(@server + '/enterprises/'+ enterprise_id.to_s + '/eventlogs')
+      if response.code == 200
+        if response.body == ''
+          _log.warn('No events present')
+          return
+        end
+        return JSON.parse(response.body)
+      end
+      _log.error('Error in connection ' + response.code.to_s)
+    end
+
   end
 end
