@@ -13,6 +13,7 @@ module MiqServer::WorkerManagement::Monitor::ClassNames
     ManageIQ::Providers::Openstack::CloudManager::MetricsCollectorWorker
     ManageIQ::Providers::Openstack::NetworkManager::MetricsCollectorWorker
     ManageIQ::Providers::Openstack::InfraManager::MetricsCollectorWorker
+    ManageIQ::Providers::Nuage::NetworkManager::MetricsCollectorWorker
     MiqEmsMetricsProcessorWorker
     MiqEmsRefreshCoreWorker
     ManageIQ::Providers::Azure::CloudManager::RefreshWorker
@@ -50,6 +51,7 @@ module MiqServer::WorkerManagement::Monitor::ClassNames
     ManageIQ::Providers::Openstack::CloudManager::EventCatcher
     ManageIQ::Providers::Openstack::NetworkManager::EventCatcher
     ManageIQ::Providers::Openstack::InfraManager::EventCatcher
+    ManageIQ::Providers::Nuage::NetworkManager::EventCatcher
     ManageIQ::Providers::StorageManager::CinderManager::EventCatcher
     ManageIQ::Providers::Vmware::InfraManager::EventCatcher
     ManageIQ::Providers::Vmware::CloudManager::EventCatcher
@@ -82,6 +84,7 @@ module MiqServer::WorkerManagement::Monitor::ClassNames
     ManageIQ::Providers::Openstack::CloudManager::MetricsCollectorWorker
     ManageIQ::Providers::Openstack::NetworkManager::MetricsCollectorWorker
     ManageIQ::Providers::Openstack::InfraManager::MetricsCollectorWorker
+    ManageIQ::Providers::Nuage::NetworkManager::MetricsCollectorWorker
     MiqReportingWorker
     MiqSmartProxyWorker
     MiqGenericWorker
@@ -108,6 +111,7 @@ module MiqServer::WorkerManagement::Monitor::ClassNames
     ManageIQ::Providers::Openstack::CloudManager::RefreshWorker
     ManageIQ::Providers::Openstack::NetworkManager::RefreshWorker
     ManageIQ::Providers::Openstack::InfraManager::RefreshWorker
+    ManageIQ::Providers::Nuage::NetworkManager::RefreshWorker
     ManageIQ::Providers::StorageManager::CinderManager::RefreshWorker
     ManageIQ::Providers::StorageManager::SwiftManager::RefreshWorker
     ManageIQ::Providers::Vmware::CloudManager::RefreshWorker
@@ -125,6 +129,7 @@ module MiqServer::WorkerManagement::Monitor::ClassNames
     ManageIQ::Providers::Openstack::CloudManager::EventCatcher
     ManageIQ::Providers::Openstack::NetworkManager::EventCatcher
     ManageIQ::Providers::Openstack::InfraManager::EventCatcher
+    ManageIQ::Providers::Nuage::NetworkManager::EventCatcher
     ManageIQ::Providers::StorageManager::CinderManager::EventCatcher
     ManageIQ::Providers::Amazon::CloudManager::EventCatcher
     ManageIQ::Providers::Azure::CloudManager::EventCatcher

@@ -1278,6 +1278,12 @@
         :amqp_recovery_attempts: 4
         :ceilometer:
           :event_types_regex: '\A(firewall|floatingip|gateway|net|port|router|subnet|security-group|vpn)'
+      :event_catcher_nuage_network:
+        :poll: 15.seconds
+        :topics:
+          :neutron: "notifications.*"
+        :duration: 10.seconds
+        :capacity: 50
       :event_catcher_amazon:
         :poll: 15.seconds
       :event_catcher_azure:

@@ -23,7 +23,7 @@ module ManageIQ::Providers
 
       _log.info("#{log_header}...")
       get_enterprises
-     # get_policy_groups
+      get_policy_groups
       get_events
       _log.info(@data)
       @data
