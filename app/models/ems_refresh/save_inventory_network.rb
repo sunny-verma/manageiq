@@ -99,7 +99,8 @@ module EmsRefresh::SaveInventoryNetwork
     hashes.each do |h|
       h[:orchestration_stack_id] = h.fetch_path(:orchestration_stack, :id)
     end
-
+    require "byebug"
+    byebug
     save_inventory_multi(ems.network_groups,
                          hashes,
                          deletes,
@@ -209,7 +210,8 @@ module EmsRefresh::SaveInventoryNetwork
               else
                 []
               end
-
+    require "byebug"
+    byebug
     hashes.each do |h|
       %i(cloud_tenant cloud_network network_group).each do |relation|
         h[relation] = h.fetch_path(relation, :_object) if h.fetch_path(relation, :_object)

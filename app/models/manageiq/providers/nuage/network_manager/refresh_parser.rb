@@ -36,14 +36,31 @@ module ManageIQ::Providers
         @enterprises[enterprise['ID']] = enterprise['name']
       end
       process_collection(enterprises, :network_groups) { |n| parse_network_group(n) }
-      get_domains
+      get_domains1
     end
 
-    def get_domains
+    def get_domains1
       domains = @vsd_client.get_domains
       domains.each do |domain|
         @domains[domain['ID']] = domain['name'], domain['parentID'], @enterprises[domain['parentID']]
       end
+      get_zones
+    end
+
+    def get_domains
+      @data[:network_routers] = []
+      @data[:network_groups].each do |net|
+        # filtering out domains/routers based on the enterprise they are mapped to
+        net[:network_routers] = @vsd_client.get_domains.collect { |d| parse_domain(d) }.select { |filter| filter[:extra_attributes]['enterprise_name'] == net[:name] }
+
+        # Lets store all domains into indexed data, so we can reference them elsewhere
+#        net[:network_routers].each do |x|
+#          @data_index.store_path(:network_routers, x[:ems_ref], x)
+#          @data[:network_routers] << x
+#        end
+      end
+      _log.info(@data[:network_routers])
+      
       get_zones
     end
 
@@ -62,7 +79,7 @@ module ManageIQ::Providers
         # filtering out subnets based on the enterprise they are mapped to
         net[:cloud_subnets] = @vsd_client.get_subnets.collect { |s| parse_subnet(s) }.select { |filter| filter[:extra_attributes]['enterprise_name'] == net[:name] }
 
-        # Lets store also subnets into indexed data, so we can reference them elsewhere
+        # Lets store all subnets into indexed data, so we can reference them elsewhere
         net[:cloud_subnets].each do |x|
           @data_index.store_path(:cloud_subnets, x[:ems_ref], x)
           @data[:cloud_subnets] << x
@@ -90,6 +107,17 @@ module ManageIQ::Providers
         :status  => status,
       }
       return uid, new_result
+    end
+
+    def parse_domain(domain)
+      uid = domain['ID']
+      @domains[domain['ID']] = domain['name'], domain['parentID'], @enterprises[domain['parentID']]
+      {
+        :type             => self.class.network_router_type,
+        :name             => domain['name'],
+        :ems_ref          => uid,
+        :extra_attributes => {'enterprise_name' => @enterprises[domain['parentID']], 'enterprise_id' => domain['parentID'] }
+      }
     end
 
     def parse_subnet(subnet)
@@ -138,6 +166,10 @@ module ManageIQ::Providers
 
       def network_group_type
         "ManageIQ::Providers::Nuage::NetworkManager::NetworkGroup"
+      end
+
+      def network_router_type
+        "ManageIQ::Providers::Nuage::NetworkManager::NetworkRouter"
       end
 
       def security_group_type
