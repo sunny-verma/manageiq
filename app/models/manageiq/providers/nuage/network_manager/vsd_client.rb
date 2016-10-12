@@ -10,8 +10,9 @@ module ManageIQ::Providers
       @password = password
       @rest_call = Rest.new(server, user, password)
       connected, data = @rest_call.login
+      p data
       if connected
-        @enterprise_id = data
+#        @enterprise_id = data
         return
       end
       _log.error('VSD Authentication failed')

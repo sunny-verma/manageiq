@@ -16,6 +16,30 @@ class ManageIQ::Providers::Nuage::NetworkManager < ManageIQ::Providers::NetworkM
     @description ||= "Nuage Network Manager".freeze
   end
 
+  def supports_hostname?
+    true
+  end 
+
+  def supports_port?
+    true
+  end 
+
+  def supports_api_version?
+    true
+  end 
+
+  def supports_security_protocol?
+    true
+  end 
+
+  def supported_auth_types
+    %w(default)
+  end 
+
+  def supports_provider_id?
+    true
+  end
+
   def self.raw_connect(auth_url, username, password)
     VsdClient.new(auth_url, username, password)
   end
@@ -35,8 +59,44 @@ class ManageIQ::Providers::Nuage::NetworkManager < ManageIQ::Providers::NetworkM
     self.class.raw_connect(url, username, password)
   end
 
+  def translate_exception(err)
+    case err 
+    when Excon::Errors::Unauthorized
+      MiqException::MiqInvalidCredentialsError.new "Login failed due to a bad username or password."
+    when Excon::Errors::Timeout
+      MiqException::MiqUnreachableError.new "Login attempt timed out"
+    when Excon::Errors::SocketError
+      MiqException::MiqHostError.new "Socket error: #{err.message}"
+    when MiqException::MiqInvalidCredentialsError, MiqException::MiqHostError
+      err 
+    else
+      MiqException::MiqEVMLoginError.new "Unexpected response returned from system: #{err.message}"
+    end 
+  end
+
+  def verify_credentials(auth_type = nil, options = {})
+    auth_type ||= 'default'
+
+    require "byebug"
+    byebug
+
+    raise MiqException::MiqHostError, "No credentials defined" if missing_credentials?(auth_type)
+
+#    options[:auth_type] = auth_type
+    options.merge!(:auth_type => auth_type)
+    with_provider_connection(options) {}
+    true
+
+  rescue => err 
+    miq_exception = translate_exception(err)
+    raise unless miq_exception
+
+    _log.error("Error Class=#{err.class.name}, Message=#{err.message}")
+    raise miq_exception
+  end
+
   def auth_url(protocol, server, port, version)
-    scheme = protocol == "no_ssl" ? "http" : "https"
+    scheme = protocol == "non-ssl" ? "http" : "https"
     "#{scheme}://#{server}:#{port}/nuage/api/#{version}"
   end
 end

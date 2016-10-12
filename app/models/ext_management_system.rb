@@ -64,6 +64,10 @@ class ExtManagementSystem < ApplicationRecord
   validate :hostname_uniqueness_valid?, :if => :hostname_required?
 
   def hostname_uniqueness_valid?
+
+    require "byebug"
+    byebug
+
     return unless hostname_required?
     return unless hostname.present? # Presence is checked elsewhere
 
@@ -355,6 +359,10 @@ class ExtManagementSystem < ApplicationRecord
   end
 
   def with_provider_connection(options = {})
+
+    require "byebug"
+    byebug
+
     raise _("no block given") unless block_given?
     _log.info("Connecting through #{self.class.name}: [#{name}]")
     yield connect(options)

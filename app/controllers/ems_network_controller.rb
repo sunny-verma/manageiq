@@ -17,16 +17,19 @@ class EmsNetworkController < ApplicationController
   end
 
   def ems_path(*args)
-    path_hash = {:action => 'show', :id => args[0].id.to_s }
-    path_hash.merge(args[1])
+    ems_network_path(*args)
   end
 
   def new_ems_path
-    {:action => 'new'}
+    new_ems_network_path
   end
 
   def ems_network_form_fields
     ems_form_fields
+  end
+
+  def show_link(ems, options = {})
+    ems_path(ems.id, options)
   end
 
   def restful?
