@@ -59,9 +59,6 @@ module Mixins
     end
 
     def update_ems_button_validate(verify_ems = nil)
-      require "byebug"
-      byebug
-
       verify_ems ||= find_by_id_filtered(model, params[:id])
       set_ems_record_vars(verify_ems, :validate)
       @in_a_form = true

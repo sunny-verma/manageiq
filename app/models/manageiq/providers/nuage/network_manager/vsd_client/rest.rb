@@ -17,8 +17,8 @@ class ManageIQ::Providers::Nuage::NetworkManager::VsdClient::Rest
         data = JSON.parse(response.body)
         extracted_data = data[0]
         @api_key = extracted_data["APIKey"]
-#        return true, extracted_data["enterpriseID"]
-        return true, response
+        return true, extracted_data["enterpriseID"]
+#        return true, response
       else
         return false, nil
       end

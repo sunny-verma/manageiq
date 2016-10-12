@@ -16,29 +16,29 @@ class ManageIQ::Providers::Nuage::NetworkManager < ManageIQ::Providers::NetworkM
     @description ||= "Nuage Network Manager".freeze
   end
 
-  def supports_hostname?
-    true
-  end 
+#  def supports_hostname?
+#    true
+#  end
 
-  def supports_port?
-    true
-  end 
+#  def supports_port?
+#    true
+#  end
 
-  def supports_api_version?
-    true
-  end 
+#  def supports_api_version?
+#    true
+#  end
 
-  def supports_security_protocol?
-    true
-  end 
+#  def supports_security_protocol?
+#    true
+#  end
 
-  def supported_auth_types
-    %w(default)
-  end 
+#  def supported_auth_types
+#    %w(default)
+#  end
 
-  def supports_provider_id?
-    true
-  end
+#  def supports_provider_id?
+#    true
+#  end
 
   def self.raw_connect(auth_url, username, password)
     VsdClient.new(auth_url, username, password)
@@ -60,7 +60,7 @@ class ManageIQ::Providers::Nuage::NetworkManager < ManageIQ::Providers::NetworkM
   end
 
   def translate_exception(err)
-    case err 
+    case err
     when Excon::Errors::Unauthorized
       MiqException::MiqInvalidCredentialsError.new "Login failed due to a bad username or password."
     when Excon::Errors::Timeout
@@ -68,21 +68,17 @@ class ManageIQ::Providers::Nuage::NetworkManager < ManageIQ::Providers::NetworkM
     when Excon::Errors::SocketError
       MiqException::MiqHostError.new "Socket error: #{err.message}"
     when MiqException::MiqInvalidCredentialsError, MiqException::MiqHostError
-      err 
+      err
     else
       MiqException::MiqEVMLoginError.new "Unexpected response returned from system: #{err.message}"
-    end 
+    end
   end
 
   def verify_credentials(auth_type = nil, options = {})
     auth_type ||= 'default'
 
-    require "byebug"
-    byebug
-
     raise MiqException::MiqHostError, "No credentials defined" if missing_credentials?(auth_type)
 
-#    options[:auth_type] = auth_type
     options.merge!(:auth_type => auth_type)
     with_provider_connection(options) {}
     true
@@ -96,7 +92,7 @@ class ManageIQ::Providers::Nuage::NetworkManager < ManageIQ::Providers::NetworkM
   end
 
   def auth_url(protocol, server, port, version)
-    scheme = protocol == "non-ssl" ? "http" : "https"
+    scheme = protocol == "ssl" ? "https" : "http"
     "#{scheme}://#{server}:#{port}/nuage/api/#{version}"
   end
 end

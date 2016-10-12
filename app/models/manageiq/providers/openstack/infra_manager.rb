@@ -94,10 +94,6 @@ class ManageIQ::Providers::Openstack::InfraManager < ::EmsInfra
   end
 
   def verify_credentials(auth_type = nil, options = {})
-
-    require "byebug"
-    byebug
-
     auth_type ||= 'default'
 
     raise MiqException::MiqHostError, "No credentials defined" if missing_credentials?(auth_type)

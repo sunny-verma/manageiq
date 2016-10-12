@@ -28,10 +28,6 @@ class EmsNetworkController < ApplicationController
     ems_form_fields
   end
 
-  def show_link(ems, options = {})
-    ems_path(ems.id, options)
-  end
-
   def restful?
     true
   end

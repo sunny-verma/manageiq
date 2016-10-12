@@ -847,7 +847,7 @@ module EmsCommon
   end
 
   def retrieve_security_protocols
-    [[_('SSL without validation'), 'ssl'], [_('SSL'), 'ssl-with-validation'], [_('Non-SSL'), 'non-ssl']]
+    [[_('SSL without validation'), 'ssl-without-validation'], [_('SSL'), 'ssl'], [_('Non-SSL'), 'non-ssl']]
   end
 
   def retrieve_openstack_security_protocols
